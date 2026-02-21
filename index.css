@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Fredoka", "Kalam", ui-sans-serif, system-ui, sans-serif;
+  --font-inter: "Inter", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply font-sans;
+  }
+  
+  /* Hindi specific font fallback */
+  [lang="hi"] {
+    font-family: "Kalam", "Fredoka", sans-serif;
+  }
+}

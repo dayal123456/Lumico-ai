@@ -1,0 +1,7 @@
+{
+  "name": "Cartoon AI Chat",
+  "description": "A cartoon-style AI chat interface powered by OpenRouter.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>AI Chat</title>
+    
+    <!-- Tailwind with Typography Plugin -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Kalam:wght@300;400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    
+    <!-- Prism CSS - Light Theme -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+
+    <!-- Mermaid JS -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        overscroll-behavior: none;
+        overflow: hidden;
+        user-select: none;
+        background-color: white;
+      }
+      
+      body {
+        font-family: 'Fredoka', sans-serif;
+        caret-color: #008080; 
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* Global Smoothness - Removed global * transition to prevent lag */
+      
+      ::selection {
+        background-color: rgba(0, 128, 128, 0.2) !important;
+        color: inherit !important;
+      }
+
+      #root {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .selectable-text {
+        user-select: text !important;
+        -webkit-user-select: text !important;
+      }
+
+      .font-serif-custom {
+        font-family: 'Fredoka', sans-serif;
+      }
+      
+      @keyframes cartoonPop {
+        0% { transform: scale(0.98); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      .animate-cartoon-pop {
+        animation: cartoonPop 0.3s ease-out forwards;
+      }
+
+      @keyframes softFadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .animate-fade-in {
+        animation: softFadeIn 0.4s ease-out forwards;
+      }
+
+      .animate-scale-up {
+        animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      @keyframes scaleUp {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      
+      /* Removed Typing Cursor */
+      
+      /* Refined Scrollbar */
+      .custom-scrollbar {
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0, 128, 128, 0.4);
+      }
+
+      /* Mermaid styling */
+      .mermaid {
+        background: white;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid #f1f5f9;
+        margin: 1.5rem 0;
+        display: flex;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      }
+
+      /* Code Block Styling - Premium */
+      .prose pre {
+        background-color: #fafafa !important;
+        border-radius: 0 0 0.75rem 0.75rem;
+        padding: 1.25rem !important;
+        margin: 0 0 1.5rem 0 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        border: 1px solid #e5e7eb;
+        border-top: none;
+        overflow-x: auto !important;
+      }
+      
+      .code-header {
+        background-color: #f8fafc;
+        color: #475569;
+        padding: 6px 16px;
+        border-radius: 0.75rem 0.75rem 0 0;
+        font-family: 'Fredoka', sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        border: 1px solid #e5e7eb;
+        border-bottom: 1px solid #f1f5f9;
+        user-select: none;
+      }
+
+      .prose { max-width: none; }
+      .chat-bottom-spacer { height: 35vh; }
+      
+      /* Typography Refinements */
+      .prose p {
+        margin-top: 0.8em;
+        margin-bottom: 0.8em;
+        line-height: 1.7;
+      }
+      
+      .prose ul, .prose ol {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+      }
+    </style>
+
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/client": "https://esm.sh/react-dom@^19.2.4/client",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "markdown-it": "https://esm.sh/markdown-it@14.0.0",
+    "markdown-it-container": "https://esm.sh/markdown-it-container@4.0.0",
+    "markdown-it-task-lists": "https://esm.sh/markdown-it-task-lists@2.1.1",
+    "markdown-it-mark": "https://esm.sh/markdown-it-mark@4.0.0",
+    "dompurify": "https://esm.sh/dompurify@3.0.8",
+    "katex": "https://esm.sh/katex@0.16.9",
+    "katex/contrib/auto-render": "https://esm.sh/katex@0.16.9/contrib/auto-render",
+    "prismjs": "https://esm.sh/prismjs@1.29.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.38.0",
+    "jspdf": "https://esm.sh/jspdf@2.5.1",
+    "html2canvas": "https://esm.sh/html2canvas@1.4.1",
+    "jszip": "https://esm.sh/jszip@3.10.1",
+    "xlsx": "https://esm.sh/xlsx@0.18.5",
+    "pdfjs-dist": "https://esm.sh/pdfjs-dist@3.11.174",
+    "katex/": "https://esm.sh/katex@^0.16.28/"
+  }
+}
+</script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
